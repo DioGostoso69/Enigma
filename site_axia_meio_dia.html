@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Áxia - Hora Marcada</title>
+
+  <!-- Fonte de estilo mais "sombria" / terror -->
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #181818 0, #050505 55%, #000000 100%);
+      color: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Creepster", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    #container {
+      max-width: 900px;
+    }
+
+    #main-text {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      line-height: 1.4;
+      text-shadow: 0 0 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.4);
+      letter-spacing: 0.04em;
+    }
+
+    #sub-text {
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      opacity: 0.45;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="main-text"></div>
+    <div id="sub-text"></div>
+  </div>
+
+    <script>
+    (function () {
+      const axiaPhrase =
+        "Atentei para todas as obras... e vi que tudo era Áxia, e correr atrás do vento era correr atrás da Fase.";
+
+      const latinPhrases = [
+        "Nimis mane advenisti.", // Chegou cedo demais.
+        "Fortasse postea.",      // Talvez mais tarde.
+        "Non est tempus.",       // Não é o momento.
+        "Aliquando alio tempore.", // Talvez em outra hora.
+        "Nondum paratum est.",   // Ainda não está pronto.
+        "Exspecta paulum.",      // Espera um pouco.
+        "Tempus nondum venit.",  // O tempo ainda não chegou.
+        "Iterum venias cum animus vocat.", // Volte outra vez quando o espírito chamar.
+        "Silentium nunc; res aliter erunt postea.", // Agora silêncio; as coisas serão diferentes depois.
+        "Quod quaeris, nunc latet." // O que buscas, agora se esconde.
+      ];
+
+      function getBrazilTime() {
+        const now = new Date();
+
+        // Usa o fuso horário de Brasília, independentemente do fuso do dispositivo
+        const formatter = new Intl.DateTimeFormat("pt-BR", {
+          timeZone: "America/Sao_Paulo",
+          hour12: false,
+          hour: "numeric",
+          minute: "numeric"
+        });
+
+        const parts = formatter.formatToParts(now);
+        let hour = 0;
+        let minute = 0;
+
+        for (const part of parts) {
+          if (part.type === "hour") hour = parseInt(part.value, 10);
+          if (part.type === "minute") minute = parseInt(part.value, 10);
+        }
+
+        return { hour, minute };
+      }
+
+      function chooseRandomLatinPhrase() {
+        const index = Math.floor(Math.random() * latinPhrases.length);
+        return latinPhrases[index];
+      }
+
+      const mainTextEl = document.getElementById("main-text");
+      const subTextEl = document.getElementById("sub-text");
+
+      // Frase fixa em latim escolhida no carregamento (não muda a cada segundo)
+      const randomLatinPhrase = chooseRandomLatinPhrase();
+
+      function renderPhrase() {
+        const { hour, minute } = getBrazilTime();
+        const isNoon = hour === 12 && minute === 0;
+
+        if (isNoon) {
+          mainTextEl.textContent = axiaPhrase;
+          subTextEl.textContent = "";
+        } else {
+          mainTextEl.textContent = randomLatinPhrase;
+          subTextEl.textContent = "";
+        }
+      }
+
+      // Renderiza imediatamente ao carregar
+      renderPhrase();
+
+      // Reconfere o horário a cada segundo para nunca perder o 12:00
+      setInterval(renderPhrase, 1000);
+    })();
+  </script>
+</body>
+</html>
